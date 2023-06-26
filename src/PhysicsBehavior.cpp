@@ -1,5 +1,13 @@
 #include "PhysicsBehavior.h"
 #include <iostream>
+
+PhysicsBehavior::PhysicsBehavior(float bounce, float weight)
+: m_weight(weight), m_velocity{ 0,0 }, m_jumping(false), m_stabilty(0),
+m_rotate(false), m_bounce(bounce), m_walking(false), m_gravity(true) 
+{ 
+    if (weight < 0)m_weight = 1; m_timer.restart();
+}
+
 void PhysicsBehavior::setVelocity(const Vector2f& velocity)
 {
     auto norma = std::sqrtf(norm(velocity));
@@ -12,22 +20,8 @@ void PhysicsBehavior::setVelocity(const Vector2f& velocity)
 
 void PhysicsBehavior::update(Shape* body) 
 {   
-    //static int stable = 0, check = 0;
-    //if (std::abs(getVelocity().y) < 2)
-    //    stable++;
-    //else
-    //    stable = 0;
-
-    //if (stable >= 5)
-    //{
-    //    check++;
-    //    setVelocity({ getVelocity().x, 0 });
-    //    if (check >= 5)
-    //        stable = check = 0;
-    //}
-    //else
+    if(m_gravity)
         setVelocity({ getVelocity().x, getVelocity().y + GRAVITY * m_weight });
-    //std::cout << "response: " << m_velocity.x << " , " << m_velocity.y << std::endl;
 
     body->move(m_velocity * (m_timer.restart().asMilliseconds() * 0.08f));
 
@@ -39,6 +33,17 @@ void PhysicsBehavior::update(Shape* body)
     }
 }
 
+void PhysicsBehavior::rotate(float angle)
+{
+    float radians = angle * 3.14159265359 / 180.0;
+    float cosine = std::cos(radians);
+    float sine = std::sin(radians);
+
+    float x = getVelocity().x * cosine - getVelocity().y * sine;
+    float y = getVelocity().x * sine + getVelocity().y * cosine;
+
+    setVelocity(sf::Vector2f(x, y));
+}
 
 void PhysicsBehavior::handleHit(const Vector2f& surface)
 {    

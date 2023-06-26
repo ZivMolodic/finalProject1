@@ -13,5 +13,4 @@ private:
 	sf::RectangleShape m_logo;
 	std::vector<std::unique_ptr<MainMenuButton>>  m_buttons;
 	sf::RectangleShape m_backGround;
-	VolumeButton m_volButton;
 };
